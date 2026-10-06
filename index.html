@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Match Calculator</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 1rem;
+         background: #e0087f; font-family: system-ui, Arial, sans-serif; }
+  .card { background: #fff; width: min(480px, 100%); border-radius: 16px; padding: 1.8rem; text-align: center;
+          box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+  h1 { margin: 0 0 1.2rem; color: #e0087f; }
+  label { display: block; margin: 1rem 0 .4rem; font-weight: 700; }
+  input { width: 100%; font: inherit; padding: .6rem; border: 3px solid #000; border-radius: 10px; }
+  button { margin-top: 1.4rem; font: inherit; font-weight: 700; color: #fff; background: #e0087f;
+           border: 3px solid #f5a000; border-radius: 12px; padding: .7rem 1.6rem; cursor: pointer; }
+  button:hover { transform: scale(1.05); }
+  #result { margin-top: 1.6rem; min-height: 6rem; }
+  .percent { font-size: 3.2rem; font-weight: 800; color: #e0087f; }
+  .bar { height: 14px; background: #eee; border-radius: 99px; overflow: hidden; margin: .6rem 0; }
+  .fill { height: 100%; width: 0; background: linear-gradient(90deg, #f5a000, #e0087f); transition: width 1s; }
+  .error { color: #c00; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Love Match ❤</h1>
+
+  <!-- 1. Give every input an id so JavaScript can find it -->
+  <label for="name1">ENTER UR NAME</label>
+  <input type="text" id="name1" placeholder="Your name">
+
+  <label for="name2">ENTER UR FRIEND/LOVER'S NAME</label>
+  <input type="text" id="name2" placeholder="Their name">
+
+  <button onclick="findMatch()">FIND UR MATCH</button>
+
+  <!-- 2. An empty place where the result will appear -->
+  <div id="result"></div>
+</div>
+
+<script>
+function findMatch() {
+  // 3. Read what the user typed with .value
+  const name1 = document.querySelector("#name1").value.trim();
+  const name2 = document.querySelector("#name2").value.trim();
+  const result = document.querySelector("#result");
+
+  // 4. Stop if something is empty
+  if (name1 === "" || name2 === "") {
+    result.innerHTML = '<p class="error">Please type both names first!</p>';
+    return;
+  }
+
+  // 5. Make the percentage. Same two names always give the same score,
+  // and the order of the names doesn't matter.
+  const text = [name1.toLowerCase(), name2.toLowerCase()].sort().join("|");
+  let hash = 0;
+  for (const letter of text) {
+    hash = (hash * 31 + letter.charCodeAt(0)) % 100000;
+  }
+  const percent = (hash % 100) + 1;      // a number from 1 to 100
+
+  // 6. Pick a funny message
+  let message;
+  if (percent >= 90) message = "Soulmates. Start planning the wedding.";
+  else if (percent >= 70) message = "Strong match. Just don't mess it up.";
+  else if (percent >= 50) message = "Decent! Needs a little effort and snacks.";
+  else if (percent >= 30) message = "Rocky. Try being extra nice this week.";
+  else message = "Even chess can't save this one. Good luck!";
+
+  // 7. Show the result on the page
+  result.innerHTML =
+    '<strong id="pair"></strong>' +
+    '<div class="percent">' + percent + "%</div>" +
+    '<div class="bar"><div class="fill" id="fill"></div></div>' +
+    "<p>" + message + "</p>";
+
+  // textContent is the safe way to show typed text on a page
+  document.querySelector("#pair").textContent = name1 + " ❤ " + name2;
+
+  // animate the bar (a tiny delay so the transition runs)
+  setTimeout(function () { document.querySelector("#fill").style.width = percent + "%"; }, 50);
+}
+</script>
+</body>
+</html>
